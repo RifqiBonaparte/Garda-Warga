@@ -41,28 +41,23 @@
   </section>
 
   <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const user = App.getUser();
-      if (!user) {
-        alert('Silakan login terlebih dahulu.');
-        window.location.href = 'login.html';
-        return;
-      }
-      document.getElementById('profilCard').innerHTML = `
-        <div style="text-align:center; margin-bottom:20px">
-          <div style="width:80px;height:80px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 12px">${user.nama.charAt(0).toUpperCase()}</div>
-          <h2 style="color:var(--primary)">${user.nama}</h2>
-        </div>
-        <div class="form-group"><label>Email</label><input type="text" value="${user.email}" readonly></div>
-        <div class="form-group"><label>No. HP</label><input type="text" value="${user.hp || '-'}" readonly></div>
-        <div class="form-group"><label>RT / RW</label><input type="text" value="RT ${user.rt || '-'} / RW ${user.rw || '-'}" readonly></div>
-        <div style="display:flex; gap:10px; margin-top:16px">
-          <a href="dashboard.html" class="btn-outline" style="flex:1;text-align:center">Dashboard</a>
-          <button class="btn-submit" style="flex:1;background:var(--red)" onclick="App.logout()">Logout</button>
-        </div>
-      `;
+    document.addEventListener('DOMContentLoaded', async () => {
+      await App.wait();
+      const user=App.getUser();
+      if(!user){window.location.href='login.html';return;}
+      document.getElementById('profilCard').innerHTML=
+        '<div style="text-align:center;margin-bottom:20px"><div style="width:80px;height:80px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 12px">'+
+        (user.nama||'W').charAt(0).toUpperCase()+'</div><h2 style="color:var(--primary)">'+(user.nama||'Warga')+'</h2></div>'+
+        '<div class="form-group"><label>Email</label><input type="text" value="'+(user.email||'')+'" readonly></div>'+
+        '<div class="form-group"><label>No. HP</label><input type="text" value="'+(user.hp||'-')+'" readonly></div>'+
+        '<div class="form-group"><label>RT / RW</label><input type="text" value="RT '+(user.rt||'-')+' / RW '+(user.rw||'-')+'" readonly></div>'+
+        '<div style="display:flex;gap:10px;margin-top:16px"><a href="dashboard.html" class="btn-outline" style="flex:1;text-align:center">Dashboard</a>'+
+        '<button class="btn-submit" style="flex:1;background:var(--red)" id="logoutProfile">Logout</button></div>';
+      document.getElementById('logoutProfile').onclick=()=>App.logout();
     });
   </script>
 </body>
