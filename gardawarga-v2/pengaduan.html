@@ -65,58 +65,33 @@
     <div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await App.wait();
       const user = App.getUser();
-      if (!user) {
-        alert('Silakan login terlebih dahulu untuk melihat pengaduan.');
-        window.location.href = 'login.html';
-        return;
+      if (!user) { window.location.href='login.html'; return; }
+      const staff = App.isStaff(user);
+      if (staff) {
+        document.getElementById('aduanTitle').innerHTML='<i class="fas fa-inbox"></i> Kotak Masuk Pengaduan';
+        document.getElementById('aduanIntro').textContent='Tinjau semua laporan yang dikirim warga.';
+        document.getElementById('buatAduanBtn').style.display='none';
       }
-
-      const isStaff = App.isStaff(user);
-      const list = App.getVisiblePengaduan(user);
-      if (isStaff) {
-        document.getElementById('aduanTitle').innerHTML = '<i class="fas fa-inbox"></i> Kotak Masuk Pengaduan';
-        document.getElementById('aduanIntro').textContent = 'Tinjau semua laporan yang dikirim oleh warga.';
-        document.getElementById('buatAduanBtn').style.display = 'none';
-        document.getElementById('emptyAduan').textContent = 'Belum ada laporan warga yang masuk.';
-      }
-      if (list.length === 0) return;
-      document.getElementById('aduanTable').innerHTML = `
-        <div class="table-wrap"><table>
-          <thead><tr><th>Pengaduan</th>${isStaff ? '<th>Pelapor</th>' : ''}<th>Lokasi</th><th>Tanggal</th><th>Status</th></tr></thead>
-          <tbody>
-            ${list.map(a => `
-              <tr>
-                <td>
-                  <strong>${a.kategori}</strong>
-                  ${a.fotoPreview ? `<br><img src="${a.fotoPreview}" alt="Foto" style="max-width:72px;max-height:54px;border-radius:6px;margin-top:4px;object-fit:cover;border:1px solid #e5e7eb">` : (a.fotoNama ? '<br><small style="color:var(--primary)"><i class="fas fa-camera"></i> Ada foto</small>' : '')}
-                  <br><small style="color:var(--text-muted)">${a.deskripsi?.substring(0,50) || ''}...</small>
-                </td>
-                ${isStaff ? `<td>${a.nama || '-'}<br><small style="color:var(--text-muted)">${a.email || 'Data lama'}</small></td>` : ''}
-                <td>${a.lokasi || '-'}</td>
-                <td>${a.tanggal}</td>
-                <td>${isStaff ? `<select class="status-select" data-aduan-id="${a.id}" aria-label="Ubah status pengaduan">
-                  <option value="Dikirim" ${a.status === 'Dikirim' ? 'selected' : ''}>Dikirim</option>
-                  <option value="Diterima" ${a.status === 'Diterima' ? 'selected' : ''}>Diterima</option>
-                  <option value="Diproses" ${a.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
-                  <option value="Selesai" ${a.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
-                </select>` : `<span class="badge ${a.status==='Selesai'?'badge-done':a.status==='Diproses'?'badge-process':a.status==='Diterima'?'badge-received':'badge-sent'}">${a.status}</span>`}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table></div>
-      `;
-      if (isStaff) {
-        document.querySelectorAll('.status-select').forEach(select => {
-          select.addEventListener('change', (event) => {
-            const updated = App.updatePengaduanStatus(Number(event.target.dataset.aduanId), event.target.value, user);
-            if (updated) window.location.reload();
-          });
-        });
-      }
+      const list = await App.getPengaduan(user);
+      if (!list.length) return;
+      document.getElementById('aduanTable').innerHTML='<div class="table-wrap"><table><thead><tr><th>Pengaduan</th>' +
+        (staff?'<th>Pelapor</th>':'') + '<th>Lokasi</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>' +
+        list.map(a=>'<tr><td><strong>'+a.kategori+'</strong><br><small>'+((a.deskripsi||'').slice(0,60))+'...</small></td>' +
+        (staff?'<td>'+(a.nama||'-')+'<br><small>'+(a.email||'-')+'</small></td>':'') +
+        '<td>'+(a.lokasi||'-')+'</td><td>'+new Date(a.created_at).toLocaleDateString('id-ID')+'</td><td>' +
+        (staff?'<select class="status-select" data-id="'+a.id+'"><option>Dikirim</option><option>Diterima</option><option>Diproses</option><option>Selesai</option></select>':'<span class="badge">'+a.status+'</span>')+
+        '</td></tr>').join('')+'</tbody></table></div>';
+      if(staff) document.querySelectorAll('.status-select').forEach(s=>{
+        s.value=list.find(a=>a.id===s.dataset.id)?.status || 'Dikirim';
+        s.addEventListener('change',async()=>{await App.updatePengaduanStatus(s.dataset.id,s.value);window.location.reload();});
+      });
     });
   </script>
 </body>
