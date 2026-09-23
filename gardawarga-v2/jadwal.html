@@ -117,6 +117,16 @@
     document.addEventListener('DOMContentLoaded',async()=>{
       await App.wait();
       allEvents=await App.getJadwal();
+      if(App.isStaff()){
+        const box=document.createElement('div');
+        box.className='card';
+        box.innerHTML='<h2><i class="fas fa-plus"></i> Kelola Jadwal</h2><form id="jadwalForm" style="display:grid;gap:10px"><input id="jJudul" required placeholder="Judul kegiatan"><input id="jTanggal" type="date" required><input id="jWaktu" placeholder="Waktu"><input id="jLokasi" placeholder="Lokasi"><textarea id="jDeskripsi" placeholder="Deskripsi"></textarea><button class="btn-submit" type="submit">Tambah Jadwal</button></form><div id="manageJadwal" style="margin-top:16px"></div>';
+        document.querySelector('.page-content .container').prepend(box);
+        const manage=box.querySelector('#manageJadwal');
+        const renderManage=()=>{manage.innerHTML=allEvents.map(e=>'<div style="display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #eee"><span><strong>'+e.judul+'</strong><br><small>'+e.tanggal+'</small></span><button class="btn-outline del-j" data-id="'+e.id+'">Hapus</button></div>').join('');manage.querySelectorAll('.del-j').forEach(b=>b.onclick=async()=>{if(confirm('Hapus jadwal ini?')){await App.deleteJadwal(b.dataset.id);allEvents=await App.getJadwal();renderManage();renderCalendar();}});};
+        renderManage();
+        box.querySelector('#jadwalForm').onsubmit=async e=>{e.preventDefault();await App.saveJadwal({judul:jJudul.value,tanggal:jTanggal.value,waktu:jWaktu.value,lokasi:jLokasi.value,deskripsi:jDeskripsi.value});e.target.reset();allEvents=await App.getJadwal();renderManage();renderCalendar();};
+      }
       renderCalendar();
       if(App.isStaff()){
         document.querySelector('.page-header p').textContent='Petugas dapat mengelola jadwal dari database Supabase.';
