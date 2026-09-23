@@ -100,21 +100,16 @@
     <div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await App.wait();
       const user = App.getUser();
-      if (!user) {
-        alert('Silakan login atau daftar terlebih dahulu untuk membuat pengaduan.');
-        window.location.href = 'login.html';
-        return;
-      }
-      if (App.isStaff(user)) {
-        alert('Akun petugas hanya dapat menerima dan memantau pengaduan.');
-        window.location.href = 'pengaduan.html';
-        return;
-      }
-      if (user) document.getElementById('nama').value = user.nama;
+      if (!user) { alert('Silakan login terlebih dahulu.'); window.location.href='login.html'; return; }
+      if (App.isStaff(user)) { window.location.href='pengaduan.html'; return; }
+      document.getElementById('nama').value = user.nama || '';
 
       const fotoKamera = document.getElementById('fotoKamera');
       const fotoAlbum = document.getElementById('fotoAlbum');
@@ -127,61 +122,31 @@
         if (!file || !file.type.startsWith('image/')) return;
         selectedFile = file;
         const reader = new FileReader();
-        reader.onload = (e) => {
-          previewImg.src = e.target.result;
-          fotoNama.textContent = file.name || 'Foto dari kamera';
-          previewBox.style.display = 'block';
-        };
+        reader.onload = e => { previewImg.src=e.target.result; fotoNama.textContent=file.name || 'Foto'; previewBox.style.display='block'; };
         reader.readAsDataURL(file);
       }
+      document.getElementById('btnKamera').onclick=()=>{fotoKamera.value='';fotoKamera.click();};
+      document.getElementById('btnAlbum').onclick=()=>{fotoAlbum.value='';fotoAlbum.click();};
+      fotoKamera.onchange=()=>fotoKamera.files[0]&&showPreview(fotoKamera.files[0]);
+      fotoAlbum.onchange=()=>fotoAlbum.files[0]&&showPreview(fotoAlbum.files[0]);
+      document.getElementById('btnHapusFoto').onclick=()=>{selectedFile=null;fotoKamera.value='';fotoAlbum.value='';previewImg.src='';previewBox.style.display='none';};
 
-      document.getElementById('btnKamera').addEventListener('click', () => {
-        fotoKamera.value = '';
-        fotoKamera.click();
-      });
-      document.getElementById('btnAlbum').addEventListener('click', () => {
-        fotoAlbum.value = '';
-        fotoAlbum.click();
-      });
-
-      fotoKamera.addEventListener('change', () => {
-        if (fotoKamera.files && fotoKamera.files[0]) showPreview(fotoKamera.files[0]);
-      });
-      fotoAlbum.addEventListener('change', () => {
-        if (fotoAlbum.files && fotoAlbum.files[0]) showPreview(fotoAlbum.files[0]);
-      });
-
-      document.getElementById('btnHapusFoto').addEventListener('click', () => {
-        selectedFile = null;
-        fotoKamera.value = '';
-        fotoAlbum.value = '';
-        previewImg.src = '';
-        previewBox.style.display = 'none';
-      });
-
-      document.getElementById('formAduan').addEventListener('submit', (e) => {
+      document.getElementById('formAduan').addEventListener('submit', async e => {
         e.preventDefault();
-        const data = {
-          nama: document.getElementById('nama').value,
-          email: user.email,
-          kategori: document.getElementById('kategori').value,
-          lokasi: document.getElementById('lokasi').value,
-          deskripsi: document.getElementById('deskripsi').value,
-          judul: document.getElementById('kategori').value
-        };
-        if (selectedFile) {
-          data.fotoNama = selectedFile.name || 'foto-kamera.jpg';
-          try {
-            data.fotoPreview = previewImg.src;
-          } catch (_) {}
+        try {
+          await App.addPengaduan({
+            nama:user.nama,
+            kategori:document.getElementById('kategori').value,
+            lokasi:document.getElementById('lokasi').value,
+            deskripsi:document.getElementById('deskripsi').value,
+            judul:document.getElementById('kategori').value,
+            foto_nama:selectedFile?.name || null
+          });
+          document.getElementById('alertBox').innerHTML='<div class="alert alert-success">Pengaduan berhasil dikirim!</div>';
+          setTimeout(()=>window.location.href='pengaduan.html',700);
+        } catch(error) {
+          document.getElementById('alertBox').innerHTML='<div class="alert">Pengaduan gagal dikirim. Coba lagi.</div>';
         }
-        App.addPengaduan(data);
-        document.getElementById('alertBox').innerHTML = '<div class="alert alert-success">✅ Pengaduan berhasil dikirim! Status: <strong>Dikirim</strong></div>';
-        document.getElementById('formAduan').reset();
-        selectedFile = null;
-        previewBox.style.display = 'none';
-        if (user) document.getElementById('nama').value = user.nama;
-        setTimeout(() => window.location.href = 'pengaduan.html', 1500);
       });
     });
   </script>
