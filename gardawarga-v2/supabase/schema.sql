@@ -521,3 +521,37 @@ where not exists (
   select 1 from public.notifikasi
   where isi = 'Pembayaran iuran bulan September'
 );
+
+-- =========================
+-- STORAGE FOTO PENGADUAN
+-- =========================
+insert into storage.buckets (id, name, public)
+values ('pengaduan', 'pengaduan', true)
+on conflict (id) do nothing;
+
+drop policy if exists "pengaduan_foto_select" on storage.objects;
+create policy "pengaduan_foto_select"
+on storage.objects for select
+to public
+using (bucket_id = 'pengaduan');
+
+drop policy if exists "pengaduan_foto_insert_own" on storage.objects;
+create policy "pengaduan_foto_insert_own"
+on storage.objects for insert
+to authenticated
+with check (
+  bucket_id = 'pengaduan'
+  and (storage.foldername(name))[1] = auth.uid()::text
+);
+
+drop policy if exists "pengaduan_foto_delete_own_or_staff" on storage.objects;
+create policy "pengaduan_foto_delete_own_or_staff"
+on storage.objects for delete
+to authenticated
+using (
+  bucket_id = 'pengaduan'
+  and (
+    (storage.foldername(name))[1] = auth.uid()::text
+    or public.is_petugas()
+  )
+);
