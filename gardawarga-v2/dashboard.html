@@ -82,21 +82,18 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await App.wait();
       const user = App.getUser();
-      if (!user) {
-        alert('Silakan login terlebih dahulu.');
-        window.location.href = 'login.html';
-        return;
-      }
-      document.getElementById('welcomeBox').innerHTML = `
-        <h2>Halo, ${user.nama}! 👋</h2>
-        <p>Selamat datang di GardaWarga — Platform Pelayanan Warga</p>
-      `;
-      document.getElementById('statNotif').textContent = App.unreadCount();
-      const aduan = App.getVisiblePengaduan(user);
+      if (!user) { window.location.href = 'login.html'; return; }
+      document.getElementById('welcomeBox').innerHTML =
+        '<h2>Halo, ' + (user.nama || 'Warga') + '! 👋</h2><p>Selamat datang di GardaWarga — Platform Pelayanan Warga</p>';
+      document.getElementById('statNotif').textContent = await App.unreadCount();
+      const aduan = await App.getPengaduan(user);
       document.getElementById('statAduan').textContent = aduan.length;
       if (App.isStaff(user)) {
         document.querySelector('.page-header h1').textContent = 'Dashboard Petugas';
@@ -104,22 +101,12 @@
         document.getElementById('buatAduanAction').style.display = 'none';
         document.querySelector('#myAduanList').previousElementSibling.innerHTML = '<i class="fas fa-inbox"></i> Pengaduan Terbaru Warga';
       }
-
-      if (aduan.length > 0) {
-        document.getElementById('myAduanList').innerHTML = `
-          <div class="table-wrap"><table>
-            <thead><tr><th>Pengaduan</th><th>Tanggal</th><th>Status</th></tr></thead>
-            <tbody>
-              ${aduan.slice(0,5).map(a => `
-                <tr>
-                  <td>${a.judul || a.kategori}</td>
-                  <td>${a.tanggal}</td>
-                  <td><span class="badge ${a.status==='Selesai'?'badge-done':a.status==='Diproses'?'badge-process':a.status==='Diterima'?'badge-received':'badge-sent'}">${a.status}</span></td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table></div>
-        `;
+      if (aduan.length) {
+        document.getElementById('myAduanList').innerHTML =
+          '<div class="table-wrap"><table><thead><tr><th>Pengaduan</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>' +
+          aduan.slice(0,5).map(a => '<tr><td>' + (a.judul || a.kategori) + '</td><td>' +
+          new Date(a.created_at).toLocaleDateString('id-ID') + '</td><td><span class="badge">' + a.status + '</span></td></tr>').join('') +
+          '</tbody></table></div>';
       }
     });
   </script>
