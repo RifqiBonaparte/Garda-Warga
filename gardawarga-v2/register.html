@@ -69,25 +69,37 @@
   </section>
 
   <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script>
-    document.getElementById('formReg').addEventListener('submit', (e) => {
+    document.getElementById('formReg').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const nama = document.getElementById('nama').value;
-      const email = document.getElementById('email').value;
-      const registered = App.registerAccount({
-        nama, email,
-        hp: document.getElementById('hp').value || '-',
-        rt: document.getElementById('rt').value || '-',
-        rw: document.getElementById('rw').value || '-',
-        password: document.getElementById('password').value
-      });
-      if (!registered) {
-        document.getElementById('alertBox').innerHTML = '<div class="alert" style="background:#ffebee;color:#c62828;border:1px solid #ef9a9a">Email sudah terdaftar atau tidak dapat digunakan.</div>';
+      const alertBox = document.getElementById('alertBox');
+      const password = document.getElementById('password').value;
+      if (password.length < 6) {
+        alertBox.innerHTML = '<div class="alert">Password minimal 6 karakter.</div>';
         return;
       }
-      document.getElementById('alertBox').innerHTML = '<div class="alert alert-success">Registrasi berhasil! Mengalihkan ke Dashboard...</div>';
-      setTimeout(() => window.location.href = 'dashboard.html', 1000);
+      try {
+        await App.wait();
+        const result = await App.registerAccount({
+          nama: document.getElementById('nama').value,
+          email: document.getElementById('email').value,
+          hp: document.getElementById('hp').value || '-',
+          rt: document.getElementById('rt').value || '-',
+          rw: document.getElementById('rw').value || '-',
+          password
+        });
+        if (result.session) {
+          alertBox.innerHTML = '<div class="alert alert-success">Registrasi berhasil! Mengalihkan...</div>';
+          setTimeout(() => window.location.href = 'dashboard.html', 700);
+        } else {
+          alertBox.innerHTML = '<div class="alert alert-success">Akun dibuat. Cek email konfirmasi, lalu login.</div>';
+        }
+      } catch (error) {
+        alertBox.innerHTML = '<div class="alert">Registrasi gagal. Periksa email dan password.</div>';
+      }
     });
   </script>
 </body>
