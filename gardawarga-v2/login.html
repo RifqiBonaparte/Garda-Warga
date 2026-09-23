@@ -57,18 +57,22 @@
   </section>
 
   <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script>
-    document.getElementById('formLogin').addEventListener('submit', (e) => {
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value;
-      const pass = document.getElementById('password').value;
-      if (!App.login(email, pass)) {
-        document.getElementById('alertBox').innerHTML = '<div class="alert" style="background:#ffebee;color:#c62828;border:1px solid #ef9a9a">Email atau password salah.</div>';
-        return;
+      const alertBox = document.getElementById('alertBox');
+      alertBox.innerHTML = '<div class="alert">Memproses login...</div>';
+      try {
+        await App.wait();
+        await App.login(document.getElementById('email').value, document.getElementById('password').value);
+        alertBox.innerHTML = '<div class="alert alert-success">Login berhasil! Mengalihkan...</div>';
+        setTimeout(() => window.location.href = 'dashboard.html', 500);
+      } catch (error) {
+        alertBox.innerHTML = '<div class="alert" style="background:#ffebee;color:#c62828;border:1px solid #ef9a9a">Email atau password salah.</div>';
       }
-      document.getElementById('alertBox').innerHTML = '<div class="alert alert-success">Login berhasil! Mengalihkan...</div>';
-      setTimeout(() => window.location.href = 'dashboard.html', 800);
     });
   </script>
 </body>
