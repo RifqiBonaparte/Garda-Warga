@@ -98,27 +98,51 @@
   </section>
 
   <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script>
-    document.querySelectorAll('.like-btn').forEach(btn => {
-      const id = btn.dataset.id;
-      if (App.isLiked(id)) {
-        btn.classList.add('liked');
-        btn.querySelector('i').classList.replace('fa-thumbs-up', 'fa-thumbs-up');
-      }
-      btn.addEventListener('click', () => {
-        const liked = App.toggleLike(id);
-        const countEl = btn.querySelector('.like-count');
-        let count = parseInt(countEl.textContent);
-        if (liked) { count++; btn.classList.add('liked'); }
-        else { count--; btn.classList.remove('liked'); }
-        countEl.textContent = count;
+    document.addEventListener('DOMContentLoaded',async()=>{
+      await App.wait();
+      const user=App.getUser();
+      const list=await App.getForum();
+      const topicList=document.getElementById('topicList');
+      if(!user){document.querySelector('.card').style.display='none';}
+      topicList.innerHTML=list.length?list.map(t=>{
+        const name=t.profiles?.nama || 'Warga';
+        const likes=t.forum_like?.[0]?.count || 0;
+        const comments=t.forum_komentar?.[0]?.count || 0;
+        return '<div class="forum-topic" data-id="'+t.id+'">'+
+          '<h3>'+(t.dipin?'📌 ':'')+t.judul+'</h3><p>'+name+' · '+new Date(t.created_at).toLocaleDateString('id-ID')+'</p>'+
+          '<p style="margin-top:8px">'+(t.isi||'')+'</p><div class="forum-actions">'+
+          '<button class="like-btn" data-id="'+t.id+'"><i class="fas fa-thumbs-up"></i> <span class="like-count">'+likes+'</span> Suka</button>'+
+          '<button type="button">'+comments+' Komentar</button>'+
+          (App.isStaff(user)?'<button type="button" class="pin-btn" data-id="'+t.id+'">'+(t.dipin?'Lepas Pin':'Pin')+'</button><button type="button" class="delete-btn" data-id="'+t.id+'">Hapus</button>':'')+
+          '</div></div>';
+      }).join(''):'<p style="color:var(--text-muted)">Belum ada topik.</p>';
+
+      topicList.querySelectorAll('.like-btn').forEach(btn=>btn.onclick=async()=>{
+        if(!user){alert('Silakan login.');return;}
+        try{await App.toggleLike(btn.dataset.id);window.location.reload();}catch(e){alert('Tidak dapat memberi suka.');}
       });
-    });
-    document.getElementById('searchForum')?.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase();
-      document.querySelectorAll('.forum-topic').forEach(t => {
-        t.style.display = t.querySelector('h3').textContent.toLowerCase().includes(q) ? '' : 'none';
+      topicList.querySelectorAll('.pin-btn').forEach(btn=>btn.onclick=async()=>{
+        const t=list.find(x=>x.id===btn.dataset.id);await App.pinForumTopik(btn.dataset.id,!t.dipin);window.location.reload();
+      });
+      topicList.querySelectorAll('.delete-btn').forEach(btn=>btn.onclick=async()=>{
+        if(confirm('Hapus topik ini?')){await App.deleteForumTopik(btn.dataset.id);window.location.reload();}
+      });
+
+      const form=document.querySelector('.card form');
+      if(form) form.onsubmit=async e=>{
+        e.preventDefault();
+        if(!user){alert('Silakan login terlebih dahulu.');return;}
+        const inputs=form.querySelectorAll('input,textarea');
+        try{await App.addForumTopik(inputs[0].value,inputs[1].value);window.location.reload();}
+        catch(err){alert('Topik gagal dikirim.');}
+      };
+      document.getElementById('searchForum')?.addEventListener('input',e=>{
+        const q=e.target.value.toLowerCase();
+        document.querySelectorAll('.forum-topic').forEach(t=>t.style.display=t.textContent.toLowerCase().includes(q)?'':'none');
       });
     });
   </script>
