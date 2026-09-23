@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pusat Informasi - GardaWarga</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">GW</div>
+        <div class="logo-text"><strong>GARDAWARGA</strong><small>Kepedulian Masyarakat & Lingkungan</small></div>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="profil.html">Profil</a>
+        <a href="berita.html">Berita</a>
+        <a href="jadwal.html">Jadwal</a>
+        <a href="forum.html">Forum</a>
+        <a href="pengaduan.html">Pengaduan</a>
+        <a href="program.html">Program</a>
+      </nav>
+      <div class="nav-right" id="navRight"></div>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container"><h1>📢 Pusat Informasi</h1><p>Pengumuman penting untuk warga</p></div>
+  </section>
+
+  <section class="page-content">
+    <div class="container">
+      <div class="form-group" style="max-width:400px; margin-bottom:20px">
+        <input type="text" id="searchInfo" placeholder="🔍 Cari pengumuman..." style="padding:10px 14px">
+      </div>
+      <div class="card">
+        <div class="list-item">
+          <h3>Pemberitahuan: Jadwal Pengangkutan Sampah diubah</h3>
+          <p class="meta"><i class="fas fa-calendar"></i> 12 September 2026</p>
+          <p style="margin-top:6px; font-size:0.9rem; color:#555">Mulai minggu depan, pengangkutan sampah organik setiap Senin & Kamis pukul 06.00 WIB.</p>
+        </div>
+        <div class="list-item">
+          <h3>Hasil Rapat RT September 2026</h3>
+          <p class="meta"><i class="fas fa-calendar"></i> 8 September 2026</p>
+          <p style="margin-top:6px; font-size:0.9rem; color:#555">Disepakati pembentukan tim kebersihan dan penambahan 10 unit tempat sampah terpilah.</p>
+        </div>
+        <div class="list-item">
+          <h3>Ajakan: Ikut Program Bank Sampah</h3>
+          <p class="meta"><i class="fas fa-calendar"></i> 5 September 2026</p>
+          <p style="margin-top:6px; font-size:0.9rem; color:#555">Tukar sampah plastik & kertas di Bank Sampah Desa setiap Sabtu. Dapat poin kebutuhan pokok.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div></footer>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('searchInfo')?.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll('.list-item').forEach(t => {
+        t.style.display = t.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>

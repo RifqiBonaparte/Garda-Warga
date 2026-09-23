@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Program Lingkungan - GardaWarga</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">GW</div>
+        <div class="logo-text"><strong>GARDAWARGA</strong><small>Kepedulian Masyarakat & Lingkungan</small></div>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="profil.html">Profil</a>
+        <a href="berita.html">Berita</a>
+        <a href="jadwal.html">Jadwal</a>
+        <a href="forum.html">Forum</a>
+        <a href="pengaduan.html">Pengaduan</a>
+        <a href="program.html" class="active">Program</a>
+      </nav>
+      <div class="nav-right" id="navRight"></div>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container">
+      <h1>🌱 Program Lingkungan</h1>
+      <p>Program kepedulian lingkungan bersama warga</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px">
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:8px">🗑️</div>
+          <h3 style="color:var(--primary); margin-bottom:8px">Bank Sampah</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px">Tukar sampah plastik & kertas menjadi poin kebutuhan pokok.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div>
+          <small>65 / 100 kg terkumpul bulan ini</small>
+        </div>
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:8px">🌳</div>
+          <h3 style="color:var(--primary); margin-bottom:8px">Penghijauan</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px">Menanam 100 pohon di lingkungan RT.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+          <small>80 / 100 pohon ditanam</small>
+        </div>
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:8px">🧹</div>
+          <h3 style="color:var(--primary); margin-bottom:8px">Kerja Bakti</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px">Gotong royong bersih lingkungan setiap bulan.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+          <small>4 / 4 kegiatan selesai (2026)</small>
+        </div>
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:8px">💧</div>
+          <h3 style="color:var(--primary); margin-bottom:8px">Kebersihan Sungai</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px">Bersihkan sampah di bantaran sungai desa.</p>
+          <div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div>
+          <small>2 / 5 titik sudah dibersihkan</small>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px">
+        <h2>🏆 Warga Aktif (Poin)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Nama</th><th>Poin</th><th>Aktivitas</th></tr></thead>
+            <tbody>
+              <tr><td>🥇</td><td>Budi Santoso</td><td><strong>320</strong></td><td>Kerja bakti, penghijauan, pengaduan</td></tr>
+              <tr><td>🥈</td><td>Andi Wijaya</td><td><strong>280</strong></td><td>Bank sampah, kerja bakti</td></tr>
+              <tr><td>🥉</td><td>Siti Aminah</td><td><strong>250</strong></td><td>Forum aktif, penghijauan</td></tr>
+              <tr><td>4</td><td>Fathir Wildan</td><td><strong>180</strong></td><td>Pengaduan, forum</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:12px; font-size:0.85rem; color:var(--text-muted)">
+          Poin didapat dari: ikut kerja bakti (+20), penghijauan (+30), lapor pengaduan (+10), bantu kegiatan (+20)
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div></footer>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Berita - GardaWarga</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">GW</div>
+        <div class="logo-text"><strong>GARDAWARGA</strong><small>Kepedulian Masyarakat & Lingkungan</small></div>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="profil.html">Profil</a>
+        <a href="berita.html" class="active">Berita</a>
+        <a href="jadwal.html">Jadwal</a>
+        <a href="forum.html">Forum</a>
+        <a href="pengaduan.html">Pengaduan</a>
+        <a href="program.html">Program</a>
+      </nav>
+      <div class="nav-right" id="navRight"></div>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container"><h1>📰 Berita & Informasi</h1><p>Update terkini seputar kegiatan warga</p></div>
+  </section>
+
+  <section class="page-content">
+    <div class="container">
+      <div class="form-group" style="max-width:400px; margin-bottom:20px">
+        <input type="text" id="searchBerita" placeholder="🔍 Cari berita..." style="padding:10px 14px">
+      </div>
+      <div id="beritaList">
+        <a href="berita-detail.html" class="list-item" style="display:block">
+          <h3>Warga Sukses Gelar Kerja Bakti Massal</h3>
+          <p class="meta"><i class="fas fa-calendar"></i> 10 September 2026</p>
+          <p style="margin-top:6px; font-size:0.9rem; color:#555">Lebih dari 150 warga ikut serta membersihkan saluran air dan area publik...</p>
+        </a>
+        <div class="list-item">
+          <h3>Launching Prototype Website GardaWarga</h3>
+          <p class="meta"><i class="fas fa-calendar"></i> 13 September 2026</p>
+          <p style="margin-top:6px; font-size:0.9rem; color:#555">Kelompok siswa XI RPL 2 mempresentasikan prototype website GardaWarga...</p>
+        </div>
+        <div class="list-item">
+          <h3>Program Penghijauan Dimulai</h3>
+          <p class="meta"><i class="fas fa-calendar"></i> 1 September 2026</p>
+          <p style="margin-top:6px; font-size:0.9rem; color:#555">Sebanyak 50 bibit pohon disiapkan untuk ditanam di sepanjang jalan desa...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div></footer>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('searchBerita')?.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll('#beritaList .list-item, #beritaList a').forEach(t => {
+        t.style.display = t.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>

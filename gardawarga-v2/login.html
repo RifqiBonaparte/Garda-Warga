@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - GardaWarga</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">GW</div>
+        <div class="logo-text"><strong>GARDAWARGA</strong><small>Kepedulian Masyarakat & Lingkungan</small></div>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="profil.html">Profil</a>
+        <a href="berita.html">Berita</a>
+        <a href="jadwal.html">Jadwal</a>
+        <a href="forum.html">Forum</a>
+        <a href="pengaduan.html">Pengaduan</a>
+        <a href="program.html">Program</a>
+      </nav>
+      <div class="nav-right" id="navRight"></div>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container"><h1>Login</h1><p>Masuk ke akun GardaWarga</p></div>
+  </section>
+
+  <section class="page-content">
+    <div class="auth-box">
+      <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+      <div id="alertBox"></div>
+      <form id="formLogin">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" required placeholder="email@contoh.com" value="warga@gardawarga.id">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" required placeholder="Password" value="123456">
+        </div>
+        <button type="submit" class="btn-submit" style="width:100%">Login</button>
+      </form>
+      <p style="text-align:center; margin-top:16px; font-size:0.9rem">
+        Belum punya akun? <a href="register.html" style="color:var(--accent);font-weight:600">Daftar</a>
+      </p>
+      <p style="text-align:center; margin-top:8px; font-size:0.8rem; color:var(--text-muted)">
+        Petugas: 24@gmail.com / 24sahabat
+      </p>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div></footer>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('formLogin').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const pass = document.getElementById('password').value;
+      if (!App.login(email, pass)) {
+        document.getElementById('alertBox').innerHTML = '<div class="alert" style="background:#ffebee;color:#c62828;border:1px solid #ef9a9a">Email atau password salah.</div>';
+        return;
+      }
+      document.getElementById('alertBox').innerHTML = '<div class="alert alert-success">Login berhasil! Mengalihkan...</div>';
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buat Pengaduan - GardaWarga</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">GW</div>
+        <div class="logo-text"><strong>GARDAWARGA</strong><small>Kepedulian Masyarakat & Lingkungan</small></div>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="profil.html">Profil</a>
+        <a href="berita.html">Berita</a>
+        <a href="jadwal.html">Jadwal</a>
+        <a href="forum.html">Forum</a>
+        <a href="pengaduan.html" class="active">Pengaduan</a>
+        <a href="program.html">Program</a>
+      </nav>
+      <div class="nav-right" id="navRight"></div>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container">
+      <h1>Buat Pengaduan</h1>
+      <p>Laporkan masalah yang perlu ditindaklanjuti</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <div class="container">
+      <div class="card" style="max-width:600px; margin:0 auto">
+        <h2><i class="fas fa-edit"></i> Form Pengaduan</h2>
+        <div id="alertBox"></div>
+        <form id="formAduan">
+          <div class="form-group">
+            <label>Nama Pelapor</label>
+            <input type="text" id="nama" required placeholder="Nama lengkap">
+          </div>
+          <div class="form-group">
+            <label>Kategori Pengaduan</label>
+            <select id="kategori" required>
+              <option value="">-- Pilih Kategori --</option>
+              <option value="Lampu Jalan Mati">💡 Lampu jalan mati</option>
+              <option value="Sampah Menumpuk">🗑️ Sampah menumpuk</option>
+              <option value="Saluran Air Tersumbat">🚰 Saluran air tersumbat</option>
+              <option value="Jalan Rusak">🛣️ Jalan rusak / berlubang</option>
+              <option value="Pohon Tumbang">🌳 Pohon tumbang</option>
+              <option value="Lainnya">📋 Lainnya</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Lokasi</label>
+            <input type="text" id="lokasi" required placeholder="Contoh: Depan Pos Ronda RT 03">
+          </div>
+          <div class="form-group">
+            <label>Deskripsi</label>
+            <textarea id="deskripsi" required placeholder="Jelaskan kondisi masalah secara detail..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Foto Bukti (opsional)</label>
+            <div class="foto-actions">
+              <button type="button" class="btn-foto" id="btnKamera">
+                <i class="fas fa-camera"></i> Ambil dari Kamera
+              </button>
+              <button type="button" class="btn-foto btn-foto-album" id="btnAlbum">
+                <i class="fas fa-images"></i> Pilih dari Album
+              </button>
+            </div>
+            <!-- capture=environment → buka kamera belakang di HP -->
+            <input type="file" id="fotoKamera" accept="image/*" capture="environment" style="display:none">
+            <!-- tanpa capture → buka galeri/album -->
+            <input type="file" id="fotoAlbum" accept="image/*" style="display:none">
+            <div id="fotoPreview" class="foto-preview" style="display:none">
+              <img id="previewImg" alt="Preview foto">
+              <button type="button" class="btn-hapus-foto" id="btnHapusFoto" title="Hapus foto">
+                <i class="fas fa-times"></i>
+              </button>
+              <p class="foto-nama" id="fotoNama"></p>
+            </div>
+            <small style="color:var(--text-muted); display:block; margin-top:8px">
+              Bisa ambil langsung dari kamera atau pilih dari galeri HP/PC. (Prototype: file disimpan lokal, tidak diupload ke server)
+            </small>
+          </div>
+          <button type="submit" class="btn-submit" style="width:100%"><i class="fas fa-paper-plane"></i> Kirim Pengaduan</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = App.getUser();
+      if (!user) {
+        alert('Silakan login atau daftar terlebih dahulu untuk membuat pengaduan.');
+        window.location.href = 'login.html';
+        return;
+      }
+      if (App.isStaff(user)) {
+        alert('Akun petugas hanya dapat menerima dan memantau pengaduan.');
+        window.location.href = 'pengaduan.html';
+        return;
+      }
+      if (user) document.getElementById('nama').value = user.nama;
+
+      const fotoKamera = document.getElementById('fotoKamera');
+      const fotoAlbum = document.getElementById('fotoAlbum');
+      const previewBox = document.getElementById('fotoPreview');
+      const previewImg = document.getElementById('previewImg');
+      const fotoNama = document.getElementById('fotoNama');
+      let selectedFile = null;
+
+      function showPreview(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImg.src = e.target.result;
+          fotoNama.textContent = file.name || 'Foto dari kamera';
+          previewBox.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+
+      document.getElementById('btnKamera').addEventListener('click', () => {
+        fotoKamera.value = '';
+        fotoKamera.click();
+      });
+      document.getElementById('btnAlbum').addEventListener('click', () => {
+        fotoAlbum.value = '';
+        fotoAlbum.click();
+      });
+
+      fotoKamera.addEventListener('change', () => {
+        if (fotoKamera.files && fotoKamera.files[0]) showPreview(fotoKamera.files[0]);
+      });
+      fotoAlbum.addEventListener('change', () => {
+        if (fotoAlbum.files && fotoAlbum.files[0]) showPreview(fotoAlbum.files[0]);
+      });
+
+      document.getElementById('btnHapusFoto').addEventListener('click', () => {
+        selectedFile = null;
+        fotoKamera.value = '';
+        fotoAlbum.value = '';
+        previewImg.src = '';
+        previewBox.style.display = 'none';
+      });
+
+      document.getElementById('formAduan').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = {
+          nama: document.getElementById('nama').value,
+          email: user.email,
+          kategori: document.getElementById('kategori').value,
+          lokasi: document.getElementById('lokasi').value,
+          deskripsi: document.getElementById('deskripsi').value,
+          judul: document.getElementById('kategori').value
+        };
+        if (selectedFile) {
+          data.fotoNama = selectedFile.name || 'foto-kamera.jpg';
+          try {
+            data.fotoPreview = previewImg.src;
+          } catch (_) {}
+        }
+        App.addPengaduan(data);
+        document.getElementById('alertBox').innerHTML = '<div class="alert alert-success">✅ Pengaduan berhasil dikirim! Status: <strong>Dikirim</strong></div>';
+        document.getElementById('formAduan').reset();
+        selectedFile = null;
+        previewBox.style.display = 'none';
+        if (user) document.getElementById('nama').value = user.nama;
+        setTimeout(() => window.location.href = 'pengaduan.html', 1500);
+      });
+    });
+  </script>
+</body>
+</html>

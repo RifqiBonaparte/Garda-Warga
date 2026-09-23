@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - GardaWarga</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">GW</div>
+        <div class="logo-text"><strong>GARDAWARGA</strong><small>Kepedulian Masyarakat & Lingkungan</small></div>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="profil.html">Profil</a>
+        <a href="berita.html">Berita</a>
+        <a href="jadwal.html">Jadwal</a>
+        <a href="forum.html">Forum</a>
+        <a href="pengaduan.html">Pengaduan</a>
+        <a href="program.html">Program</a>
+      </nav>
+      <div class="nav-right" id="navRight"></div>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container">
+      <h1>Dashboard Warga</h1>
+      <p>Ringkasan aktivitas dan layanan Anda</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <div class="container">
+      <div class="dash-welcome" id="welcomeBox">
+        <h2>Halo! 👋</h2>
+        <p>Selamat datang di GardaWarga</p>
+      </div>
+
+      <div class="dash-stats">
+        <div class="stat-card">
+          <div class="num" id="statNotif">3</div>
+          <div class="label">📢 Notifikasi</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="statAduan">0</div>
+          <div class="label">📝 Pengaduan Saya</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">3</div>
+          <div class="label">📅 Kegiatan Bulan Ini</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-bolt"></i> Aksi Cepat</h2>
+        <div class="dash-actions">
+          <a id="buatAduanAction" href="pengaduan-buat.html" class="btn-submit"><i class="fas fa-plus"></i> Buat Pengaduan</a>
+          <a href="jadwal.html" class="btn-outline"><i class="fas fa-calendar"></i> Lihat Jadwal</a>
+          <a href="forum.html" class="btn-outline"><i class="fas fa-comments"></i> Forum Warga</a>
+          <a href="program.html" class="btn-outline"><i class="fas fa-leaf"></i> Program Lingkungan</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-history"></i> Pengaduan Terbaru Saya</h2>
+        <div id="myAduanList">
+          <p style="color:var(--text-muted)">Belum ada pengaduan. <a href="pengaduan-buat.html" style="color:var(--primary);font-weight:600">Buat sekarang</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">&copy; 2026 GardaWarga — Prototype PKK/PKKWU XI RPL 2</div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = App.getUser();
+      if (!user) {
+        alert('Silakan login terlebih dahulu.');
+        window.location.href = 'login.html';
+        return;
+      }
+      document.getElementById('welcomeBox').innerHTML = `
+        <h2>Halo, ${user.nama}! 👋</h2>
+        <p>Selamat datang di GardaWarga — Platform Pelayanan Warga</p>
+      `;
+      document.getElementById('statNotif').textContent = App.unreadCount();
+      const aduan = App.getVisiblePengaduan(user);
+      document.getElementById('statAduan').textContent = aduan.length;
+      if (App.isStaff(user)) {
+        document.querySelector('.page-header h1').textContent = 'Dashboard Petugas';
+        document.querySelector('.page-header p').textContent = 'Pantau laporan pengaduan warga';
+        document.getElementById('buatAduanAction').style.display = 'none';
+        document.querySelector('#myAduanList').previousElementSibling.innerHTML = '<i class="fas fa-inbox"></i> Pengaduan Terbaru Warga';
+      }
+
+      if (aduan.length > 0) {
+        document.getElementById('myAduanList').innerHTML = `
+          <div class="table-wrap"><table>
+            <thead><tr><th>Pengaduan</th><th>Tanggal</th><th>Status</th></tr></thead>
+            <tbody>
+              ${aduan.slice(0,5).map(a => `
+                <tr>
+                  <td>${a.judul || a.kategori}</td>
+                  <td>${a.tanggal}</td>
+                  <td><span class="badge ${a.status==='Selesai'?'badge-done':a.status==='Diproses'?'badge-process':a.status==='Diterima'?'badge-received':'badge-sent'}">${a.status}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table></div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

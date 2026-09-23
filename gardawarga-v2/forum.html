@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forum Diskusi - GardaWarga</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">GW</div>
+        <div class="logo-text"><strong>GARDAWARGA</strong><small>Kepedulian Masyarakat & Lingkungan</small></div>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="profil.html">Profil</a>
+        <a href="berita.html">Berita</a>
+        <a href="jadwal.html">Jadwal</a>
+        <a href="forum.html" class="active">Forum</a>
+        <a href="pengaduan.html">Pengaduan</a>
+        <a href="program.html">Program</a>
+      </nav>
+      <div class="nav-right" id="navRight"></div>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container">
+      <h1>💬 Forum Diskusi</h1>
+      <p>Tempat berkomunikasi dan berdiskusi antar warga</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <div class="container">
+      <div class="form-group" style="max-width:400px; margin-bottom:20px">
+        <input type="text" id="searchForum" placeholder="🔍 Cari topik..." style="padding:10px 14px">
+      </div>
+
+      <div id="topicList">
+        <div class="forum-topic" data-id="1">
+          <h3>Gotong royong membersihkan sungai RT 03</h3>
+          <p class="meta"><i class="fas fa-user"></i> Budi Santoso &nbsp;·&nbsp; 12 September 2026</p>
+          <div class="forum-actions">
+            <button class="like-btn" data-id="1"><i class="fas fa-thumbs-up"></i> <span class="like-count">15</span> Suka</button>
+            <button><i class="fas fa-comment"></i> 12 Komentar</button>
+            <button><i class="fas fa-share"></i> Bagikan</button>
+          </div>
+        </div>
+        <div class="forum-topic" data-id="2">
+          <h3>Usulan tempat sampah terpisah di setiap gang</h3>
+          <p class="meta"><i class="fas fa-user"></i> Siti Aminah &nbsp;·&nbsp; 11 September 2026</p>
+          <div class="forum-actions">
+            <button class="like-btn" data-id="2"><i class="fas fa-thumbs-up"></i> <span class="like-count">8</span> Suka</button>
+            <button><i class="fas fa-comment"></i> 8 Komentar</button>
+            <button><i class="fas fa-share"></i> Bagikan</button>
+          </div>
+        </div>
+        <div class="forum-topic" data-id="3">
+          <h3>Jadwal posyandu bulan September</h3>
+          <p class="meta"><i class="fas fa-user"></i> Admin RT &nbsp;·&nbsp; 10 September 2026</p>
+          <div class="forum-actions">
+            <button class="like-btn" data-id="3"><i class="fas fa-thumbs-up"></i> <span class="like-count">5</span> Suka</button>
+            <button><i class="fas fa-comment"></i> 5 Komentar</button>
+            <button><i class="fas fa-share"></i> Bagikan</button>
+          </div>
+        </div>
+        <div class="forum-topic" data-id="4">
+          <h3>Laporan lampu jalan mati di depan pos ronda</h3>
+          <p class="meta"><i class="fas fa-user"></i> Andi Wijaya &nbsp;·&nbsp; 8 September 2026</p>
+          <div class="forum-actions">
+            <button class="like-btn" data-id="4"><i class="fas fa-thumbs-up"></i> <span class="like-count">3</span> Suka</button>
+            <button><i class="fas fa-comment"></i> 3 Komentar</button>
+            <button><i class="fas fa-share"></i> Bagikan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px">
+        <h2>Buat Topik Baru</h2>
+        <form onsubmit="alert('Topik berhasil dikirim (simulasi prototype)!'); this.reset(); return false;">
+          <div class="form-group">
+            <label>Judul Topik</label>
+            <input type="text" required placeholder="Masukkan judul diskusi">
+          </div>
+          <div class="form-group">
+            <label>Isi Diskusi</label>
+            <textarea required placeholder="Tulis pendapat atau pertanyaan Anda..."></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Kirim Topik</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 GardaWarga</div></div></footer>
+  <script src="app.js"></script>
+  <script>
+    document.querySelectorAll('.like-btn').forEach(btn => {
+      const id = btn.dataset.id;
+      if (App.isLiked(id)) {
+        btn.classList.add('liked');
+        btn.querySelector('i').classList.replace('fa-thumbs-up', 'fa-thumbs-up');
+      }
+      btn.addEventListener('click', () => {
+        const liked = App.toggleLike(id);
+        const countEl = btn.querySelector('.like-count');
+        let count = parseInt(countEl.textContent);
+        if (liked) { count++; btn.classList.add('liked'); }
+        else { count--; btn.classList.remove('liked'); }
+        countEl.textContent = count;
+      });
+    });
+    document.getElementById('searchForum')?.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll('.forum-topic').forEach(t => {
+        t.style.display = t.querySelector('h3').textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>
